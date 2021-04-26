@@ -19,7 +19,7 @@ class Gallery:
 
 class Hello:
     def __call__(self, request):
-        return '200 OK', render('hello.html', username=request.get('username', None))
+        return '200 OK', render('hello.html', username=request.get('request_params', {}).get('username'))
 
 
 class NotFound404:
