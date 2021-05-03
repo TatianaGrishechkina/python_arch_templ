@@ -127,7 +127,7 @@ class Engine:
 
 
 # порождающий паттерн Синглтон, создаем метакласс
-class SingletonByName(type):
+class SingletonMeta(type):
     def __init__(cls, name, bases, attrs, **kwargs):
         super().__init__(name, bases, attrs)
         cls.__instance = {}
@@ -144,10 +144,10 @@ class SingletonByName(type):
             return cls.__instance[name]
 
 
-class Logger(metaclass=SingletonByName):
+class Logger(metaclass=SingletonMeta):
     def __init__(self, name):
         self.name = name
 
     @staticmethod
     def log(text):
-        print('log--->', text)
+        print('SingletonLog --->', text)
