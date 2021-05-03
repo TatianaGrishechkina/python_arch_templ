@@ -56,7 +56,7 @@ class RecordCourse(Course):
 
 # Категория
 class Category:
-    # реестр?
+    # начальный id
     auto_id = 0
 
     def __init__(self, name, category):
