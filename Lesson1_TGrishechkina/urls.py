@@ -1,6 +1,7 @@
 from sys import version_info
 from datetime import date
-from views import Index, About, Gallery, Hello
+from views import Index, About, Gallery, Hello, CoursesList, \
+    CreateCourse, CreateCategory, CategoryList, CloneCourse
 
 
 # front controller
@@ -23,4 +24,9 @@ routes = {
     '/about/': About(),
     '/gallery/': Gallery(),
     '/hello/': Hello(),
+    '/courses-list/': CoursesList(),
+    '/create-course/': CreateCourse(),
+    '/create-category/': CreateCategory(),
+    '/category-list/': CategoryList(),
+    '/clone-course/': CloneCourse(),
 }

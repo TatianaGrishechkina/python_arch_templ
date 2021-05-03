@@ -10,8 +10,23 @@
         <p style="text-indent:20px">
         Добро пожаловать на мою страницу!</p>
         <p style="text-indent:20px">Сегодня {{date}}, а Python у Вас всего-навсего {{python_ver}} - нашли чем удивить :-)</p>
+    <div>
+		<h2>Список существующих категорий, на которые делятся наши курсы:</h2>
+        {% for item in objects_list %}
+        <li>
+            {{item.name}} <span>Количество курсов: {{item.course_count()}}</span>
+			<a href="/courses-list/?id={{item.id}}">Показать курсы</a>
+        </li>
+        {% endfor %}
+	</div>
+    <div>
+        <p></p>
+		<a href="/create-category/">Если хотите создать новую категорию - жмите сюда!</a>
+	</div>
+    <div>
         <form method="GET" action="hello">
-            <p>Если хотите оставить отзыв - напишите как вас зовут?
+            <p>Если хотите оставить отзыв на наши супер-пупер курсы </p>
+                <p>- напишите как вас зовут?
                 <input name="username" required> <input type="submit" value="Поприветствовать"></p>
         </form>
     </div>
