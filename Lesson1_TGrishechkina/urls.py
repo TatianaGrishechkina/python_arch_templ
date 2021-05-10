@@ -19,14 +19,3 @@ def version_front(request):
 
 fronts = [secret_front, other_front, version_front]
 
-routes = {
-    '/': Index(),
-    '/about/': About(),
-    '/gallery/': Gallery(),
-    '/hello/': Hello(),
-    '/courses-list/': CoursesList(),
-    '/create-course/': CreateCourse(),
-    '/create-category/': CreateCategory(),
-    '/category-list/': CategoryList(),
-    '/clone-course/': CloneCourse(),
-}

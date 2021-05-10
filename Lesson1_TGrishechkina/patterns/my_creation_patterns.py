@@ -2,6 +2,7 @@ import copy
 import quopri
 
 
+# creation patterns
 # абстрактный пользователь
 class User:
     pass
