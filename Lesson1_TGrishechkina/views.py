@@ -1,9 +1,12 @@
 from my_framework.templator import render
 from patterns.my_creation_patterns import Engine, Logger
 from patterns.my_structural_patterns import MyDecorator, DecTimeit
+from patterns.my_beh_patterns import EmailNotif, SmsNotif, ListView, CreateView, BaseSerializer
 
 site = Engine()
 logger = Logger('main')
+email_notifier = EmailNotif()
+sms_notifier = SmsNotif()
 
 routes = {}
 
@@ -77,6 +80,9 @@ class CreateCourse:
                 category = site.find_category_by_id(int(self.category_id))
 
                 course = site.create_course('record', name, category)
+                # Добавляем наблюдателей на курс
+                course.observers.append(email_notifier)
+                course.observers.append(sms_notifier)
                 site.courses.append(course)
 
             return '200 OK', render('courses_list.html', objects_list=category.courses,
@@ -150,3 +156,47 @@ class CategoryList:
     def __call__(self, request):
         logger.log('Список категорий')
         return '200 OK', render('category_list.html', objects_list=site.categories)
+
+
+@MyDecorator(routes=routes, url='/follower-list/')
+class FollowerListView(ListView):
+    queryset = site.followers
+    template_name = 'follower_list.html'
+
+
+@MyDecorator(routes=routes, url='/create-follower/')
+class FollowerCreateView(CreateView):
+    template_name = 'create_follower.html'
+
+    def create_obj(self, data: dict):
+        name = data['name']
+        name = site.decode_value(name)
+        new_obj = site.create_user('follower', name)
+        site.followers.append(new_obj)
+
+
+@MyDecorator(routes=routes, url='/add-follower/')
+class AddFollowerByCourseCreateView(CreateView):
+    template_name = 'add_follower.html'
+
+    def get_context_data(self):
+        context = super().get_context_data()
+        context['courses'] = site.courses
+        context['followers'] = site.followers
+        return context
+
+    def create_obj(self, data: dict):
+        course_name = data['course_name']
+        course_name = site.decode_value(course_name)
+        course = site.get_course(course_name)
+        follower_name = data['follower_name']
+        follower_name = site.decode_value(follower_name)
+        follower = site.get_follower(follower_name)
+        course.add_follower(follower)
+
+
+@MyDecorator(routes=routes, url='/api/')
+class CourseApi:
+    @DecTimeit(name='CourseApi')
+    def __call__(self, request):
+        return '200 OK', BaseSerializer(site.courses).save()
