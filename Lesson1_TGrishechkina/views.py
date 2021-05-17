@@ -1,12 +1,15 @@
 from my_framework.templator import render
-from patterns.my_creation_patterns import Engine, Logger
+from patterns.my_creation_patterns import Engine, Logger, MapperRegistry
 from patterns.my_structural_patterns import MyDecorator, DecTimeit
 from patterns.my_beh_patterns import EmailNotif, SmsNotif, ListView, CreateView, BaseSerializer
+from patterns.my_arch_patterns import UnitOfWork
 
 site = Engine()
 logger = Logger('main')
 email_notifier = EmailNotif()
 sms_notifier = SmsNotif()
+UnitOfWork.new_current()
+UnitOfWork.get_current().set_mapper_registry(MapperRegistry)
 
 routes = {}
 
@@ -163,6 +166,16 @@ class FollowerListView(ListView):
     queryset = site.followers
     template_name = 'follower_list.html'
 
+    def get_queryset(self):
+        mapper = MapperRegistry.get_current_mapper('follower')
+        result = mapper.all()
+        for follower in result:
+            for course in site.courses:
+                for course_follower in course.followers:
+                    if course_follower.id == follower.id:
+                        follower.courses.append(course)
+        return result
+
 
 @MyDecorator(routes=routes, url='/create-follower/')
 class FollowerCreateView(CreateView):
@@ -173,6 +186,8 @@ class FollowerCreateView(CreateView):
         name = site.decode_value(name)
         new_obj = site.create_user('follower', name)
         site.followers.append(new_obj)
+        new_obj.mark_new()
+        UnitOfWork.get_current().commit()
 
 
 @MyDecorator(routes=routes, url='/add-follower/')
